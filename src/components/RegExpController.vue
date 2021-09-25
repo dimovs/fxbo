@@ -124,6 +124,19 @@ export default {
   background-color: rgba(241, 241, 241, 1);
 }
 
+.reg-exp-controller__popup {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  padding: 20vh 10vw;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 .operators {
   display: flex;
   flex-direction: row;
