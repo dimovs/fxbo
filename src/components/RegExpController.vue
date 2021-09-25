@@ -35,7 +35,10 @@
               <button @click="addRule" type="button" class="popup__add">Rule</button>
             </div>
             <div class="popup__rules">
-              <div v-for="(rule, i) in rules" :key="i">{{ rule }}</div>
+              <div v-for="(rule, i) in rules" :key="i">
+                <span>{{ rule }}</span>
+                <button @click="deleteRule(i)" type="button">delete</button>
+              </div>
             </div>
           </div>
         </div>
@@ -102,6 +105,9 @@ export default {
       expressions.value = rules.join(' ');
       hidePopup();
     };
+    const deleteRule = (pos) => {
+      rules.splice(pos, 1);
+    };
 
     return {
       expressions,
@@ -114,6 +120,7 @@ export default {
       showPopup,
       addRule,
       applyRules,
+      deleteRule,
     };
   },
 };
