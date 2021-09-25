@@ -18,20 +18,26 @@
           </button>
         </div>
         <div class="popup__content">
-          <div class="reg-exp-controller__controls">
-            <ul class="operators">
-              <template v-for="(operator, i) in operators" :key="i">
-                <li
-                  @click="selectOperator(operator)"
-                  @keyup.enter="selectOperator(operator)"
-                  :class="{'operators__item': true, 'active': currentOperator === operator}"
-                  tabindex="0"
-                >
-                  {{ operator }}
-                </li>
-              </template>
-            </ul>
-        </div>
+          <div class="popup__content-wrapper">
+            <div class="reg-exp-controller__controls">
+              <ul class="operators">
+                <template v-for="(operator, i) in operators" :key="i">
+                  <li
+                    @click="selectOperator(operator)"
+                    @keyup.enter="selectOperator(operator)"
+                    :class="{'operators__item': true, 'active': currentOperator === operator}"
+                    tabindex="0"
+                  >
+                    {{ operator }}
+                  </li>
+                </template>
+              </ul>
+              <button @click="addRule" type="button" class="popup__add">Rule</button>
+            </div>
+            <div class="popup__rules">
+              <div v-for="(rule, i) in rules" :key="i">{{ rule }}</div>
+            </div>
+          </div>
         </div>
         <div class="popup__actions">
           <button
@@ -42,7 +48,7 @@
             Close
           </button>
           <button
-            @click="hidePopup"
+            @click="applyRules"
             type="button"
             class="popup__action popup__action--apply"
           >
@@ -55,7 +61,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, reactive } from 'vue';
 
 const OPERATORS = {
   AND: 'AND',
@@ -76,6 +82,7 @@ export default {
     const expressions = ref('');
     const isPopupShowed = ref(false);
     const currentOperator = ref(OPERATORS.AND);
+    const rules = reactive([]);
 
     const operators = computed(() => Object.values(OPERATORS));
 
@@ -88,15 +95,25 @@ export default {
     const selectOperator = (operator) => {
       currentOperator.value = operator;
     };
+    const addRule = () => {
+      rules.push('rule');
+    };
+    const applyRules = () => {
+      expressions.value = rules.join(' ');
+      hidePopup();
+    };
 
     return {
       expressions,
       isPopupShowed,
       currentOperator,
       operators,
+      rules,
       hidePopup,
       selectOperator,
       showPopup,
+      addRule,
+      applyRules,
     };
   },
 };
@@ -197,6 +214,15 @@ export default {
   font-size: 0;
 }
 
+.popup__add {
+  margin: 0;
+  padding: 0.3em;
+  border: 1px solid lightgray;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: inherit;
+}
+
 .popup__breaker:before,
 .popup__breaker:after {
   position: absolute;
@@ -218,6 +244,11 @@ export default {
 
 .popup__content {
   padding: 10px 10px 30px;
+}
+
+.popup__content-wrapper {
+  border-left: 2px solid lightblue;
+  padding-left: 5px;
 }
 
 .popup__actions {
