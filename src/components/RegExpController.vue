@@ -10,34 +10,46 @@
       </span>
     </div>
     <div v-if="isPopupShowed" class="reg-exp-controller__popup">
-      <span class="reg-exp-controller__text">Condition Expression</span>
-
-      <div class="reg-exp-controller__controls">
-        <ul class="operators">
-          <template v-for="(operator, i) in operators" :key="i">
-            <li
-              @click="selectOperator(operator)"
-              @keyup.enter="selectOperator(operator)"
-              :class="{'operators__item': true, 'active': currentOperator === operator}"
-              tabindex="0"
-            >
-              {{ operator }}
-            </li>
-          </template>
-        </ul>
+      <div class="popup">
+        <div class="popup__header">
+          <span class="popup__title">Condition Expression</span>
+          <button @click="hidePopup" type="button" class="popup__breaker">
+            Close
+          </button>
+        </div>
+        <div class="popup__content">
+          <div class="reg-exp-controller__controls">
+            <ul class="operators">
+              <template v-for="(operator, i) in operators" :key="i">
+                <li
+                  @click="selectOperator(operator)"
+                  @keyup.enter="selectOperator(operator)"
+                  :class="{'operators__item': true, 'active': currentOperator === operator}"
+                  tabindex="0"
+                >
+                  {{ operator }}
+                </li>
+              </template>
+            </ul>
+        </div>
+        </div>
+        <div class="popup__actions">
+          <button
+            @click="hidePopup"
+            type="button"
+            class="popup__action popup__action--close"
+          >
+            Close
+          </button>
+          <button
+            @click="hidePopup"
+            type="button"
+            class="popup__action popup__action--apply"
+          >
+            Apply changes
+          </button>
+        </div>
       </div>
-
-      <button @click="hidePopup" type="button">
-        <svg @click="hidePopup" height="24" role="img" width="24" viewBox="0 0 24 24">
-          <path d="M4.93,4.93,19.07,19.07m-14.14,0L19.07,4.93"
-                fill="none"
-                stroke="currentColor"
-                stroke-miterlimit="10"
-          />
-        </svg>
-      </button>
-      <button @click="hidePopup" type="button">Close</button>
-      <button @click="hidePopup" type="button">Apply changes</button>
     </div>
   </section>
 </template>
@@ -136,5 +148,83 @@ export default {
 
 .operators__item:not(:last-child) {
   border-right: 1px solid lightgray;
+}
+
+.popup {
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.popup__header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  border-bottom: 2px solid rgba(241, 241, 241, 1);
+  font-size: 1.5rem;
+  padding: 15px 10px;
+}
+
+.popup__actions {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.popup__breaker {
+  position: relative;
+  width: 16px;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  align-self: flex-start;
+  border: none;
+  background-color: transparent;
+  font-size: 0;
+}
+
+.popup__breaker:before,
+.popup__breaker:after {
+  position: absolute;
+  content: '';
+  top: 0;
+  left: 6px;
+  height: 15px;
+  width: 4px;
+  background-color: gray;
+}
+
+.popup__breaker:before {
+  transform: rotate(45deg);
+}
+
+.popup__breaker:after {
+  transform: rotate(-45deg);
+}
+
+.popup__content {
+  padding: 10px 10px 30px;
+}
+
+.popup__actions {
+  border-top: 2px solid rgba(241, 241, 241, 1);
+}
+
+.popup__action {
+  padding: 0.5em 1em;
+  border: 1px solid;
+  border-radius: 5px;
+}
+
+.popup__action--close {
+  background-color: rgba(241, 241, 241, 1);
+  border-color: lightgray;
+}
+
+.popup__action--apply {
+  color: rgba(255, 255, 255, 1);
+  background-color: green;
+  border-color: darkgreen;
 }
 </style>
