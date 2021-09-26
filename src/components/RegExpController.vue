@@ -1,15 +1,29 @@
 <template>
-  <section class="reg-exp-controller">
-    <div @click="showPopup" class="reg-exp-controller__wrapper">
-      <span class="reg-exp-controller__text">
-        Condition Expression
-      </span>
-      <textarea class="reg-exp-controller__expressions" v-model="expressions" />
-      <span class="reg-exp-controller__text">
+  <section class="controller">
+    <div class="controller__wrapper">
+      <header class="controller__header">
+        <div class="controller__title">
+          Condition Expression
+        </div>
+        <div class="controller__mode">
+          <span>Raw Mode:</span>
+          <label class="mode" tabindex="0" @keyup.enter="toggleMode">
+            <input v-model="mode" type="checkbox" hidden />
+            <span class="mode__toggle" />
+            <span class="mode__name">{{ modeName }}</span>
+          </label>
+       </div>
+      </header>
+      <textarea
+        class="controller__expressions"
+        @click="showPopup"
+        v-model="expressions"
+      />
+      <footer class="controller__footer">
         Click to the textarea above for editing expression
-      </span>
+      </footer>
     </div>
-    <div v-if="isPopupShowed" class="reg-exp-controller__popup">
+    <div v-if="isPopupShowed" class="controller__popup">
       <div class="popup">
         <div class="popup__header">
           <span class="popup__title">Condition Expression</span>
@@ -19,7 +33,7 @@
         </div>
         <div class="popup__content">
           <div class="popup__content-wrapper">
-            <div class="reg-exp-controller__controls">
+            <div class="controller__controls">
               <ul class="operators">
                 <template v-for="(operator, i) in operators" :key="i">
                   <li
@@ -82,14 +96,19 @@ export default {
     },
   },
   setup() {
+    const mode = ref(true);
     const expressions = ref('');
     const isPopupShowed = ref(false);
     const currentOperator = ref(OPERATORS.AND);
     const rules = reactive([]);
 
     const operators = computed(() => Object.values(OPERATORS));
+    const modeName = computed(() => (mode.value ? 'Enabled' : 'Disabled'));
 
     const showPopup = () => {
+      if (mode.value) {
+        return;
+      }
       isPopupShowed.value = true;
     };
     const hidePopup = () => {
@@ -108,37 +127,101 @@ export default {
     const deleteRule = (pos) => {
       rules.splice(pos, 1);
     };
+    const toggleMode = () => {
+      mode.value = !mode.value;
+    };
 
     return {
+      mode,
       expressions,
       isPopupShowed,
       currentOperator,
       operators,
       rules,
+      modeName,
       hidePopup,
       selectOperator,
       showPopup,
       addRule,
       applyRules,
       deleteRule,
+      toggleMode,
     };
   },
 };
 </script>
 
 <style scoped>
-.reg-exp-controller {
+.controller {
   width: 100%;
   height: 100%;
+  font-family: 'PT Sans', sans-serif;
+  font-size: 1rem;
+  font-weight: normal;
 }
 
-.reg-exp-controller__expressions {
+.controller *,
+.controller :before,
+.controller :after {
+  box-sizing: border-box;
+}
+
+.controller__header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 5px;
+  border: 1px solid grey;
+  border-bottom: none;
+}
+
+.controller__footer {
+  margin-top: 10px;
+  color: gray;
+  font-size: 0.8rem;
+}
+
+.mode {
+  color: rgba(28, 143, 184, 1);
+  cursor: pointer;
+}
+
+.mode__toggle {
+  display: inline-block;
+  position: relative;
+  width: 15px;
+  height: 10px;
+  border-radius: 10px;
+  border: 2px solid rgba(28, 143, 184, 1);
+  margin: 0 5px;
+}
+
+.mode__toggle:before {
+  position: absolute;
+  content: '';
+  width: 10px;
+  height: 10px;
+  top: -2px;
+  left: -2px;
+  border-radius: 50%;
+  border:  2px solid rgba(28, 143, 184, 1);
+  transition: all 0.4s ease-out;
+}
+
+input:checked + .mode__toggle:before {
+  transform: translateX(5px);
+  background-color: rgba(28, 143, 184, 1);
+}
+
+.controller__expressions {
   display: block;
   width: 100%;
   background-color: rgba(241, 241, 241, 1);
+  border: 1px solid grey;
 }
 
-.reg-exp-controller__controls {
+.controller__controls {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -148,7 +231,7 @@ export default {
   background-color: rgba(241, 241, 241, 1);
 }
 
-.reg-exp-controller__popup {
+.controller__popup {
   position: fixed;
   display: flex;
   flex-direction: column;
