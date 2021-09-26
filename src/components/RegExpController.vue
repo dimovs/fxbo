@@ -46,13 +46,19 @@
                   </li>
                 </template>
               </ul>
-              <button @click="addRule" type="button" class="popup__add">Rule</button>
+              <button @click="addRule" type="button" class="popup__add">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24">
+                  <path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z"/>
+                </svg>
+                <span>Rule</span>
+              </button>
             </div>
             <div class="popup__rules">
-              <div v-for="(rule, i) in rules" :key="i">
-                <span>{{ rule }}</span>
-                <button @click="deleteRule(i)" type="button">delete</button>
-              </div>
+              <rule
+                v-for="(rule, i) in rules"
+                :key="i"
+                :data="data"
+              />
             </div>
           </div>
         </div>
@@ -78,7 +84,10 @@
 </template>
 
 <script>
-import { ref, computed, reactive } from 'vue';
+import {
+  ref, computed, reactive,
+} from 'vue';
+import Rule from './Rule.vue';
 
 const OPERATORS = {
   AND: 'AND',
@@ -87,21 +96,36 @@ const OPERATORS = {
   NEVER: 'Never',
 };
 
+class RuleExp {
+  constructor(field = '', op = '', choice = '') {
+    this.field = field;
+    this.op = op;
+    this.choice = choice;
+  }
+
+  toString() {
+    return `${this.field} ${this.op} ${this.choice}`;
+  }
+}
+
 export default {
   name: 'RegExpController',
+  components: {
+    Rule,
+  },
   props: {
     config: {
       type: Object,
       default: () => {},
     },
   },
-  setup() {
-    const mode = ref(true);
-    const expressions = ref('');
+  setup(props) {
+    const mode = ref(false);
     const isPopupShowed = ref(false);
     const currentOperator = ref(OPERATORS.AND);
     const rules = reactive([]);
 
+    const expressions = computed(() => rules.map((rule) => rule.toString()).join('\n'));
     const operators = computed(() => Object.values(OPERATORS));
     const modeName = computed(() => (mode.value ? 'Enabled' : 'Disabled'));
 
@@ -118,14 +142,12 @@ export default {
       currentOperator.value = operator;
     };
     const addRule = () => {
-      rules.push('rule');
+      const rule = new RuleExp();
+      rules.push(rule);
     };
     const applyRules = () => {
       expressions.value = rules.join(' ');
       hidePopup();
-    };
-    const deleteRule = (pos) => {
-      rules.splice(pos, 1);
     };
     const toggleMode = () => {
       mode.value = !mode.value;
@@ -133,7 +155,6 @@ export default {
 
     return {
       mode,
-      expressions,
       isPopupShowed,
       currentOperator,
       operators,
@@ -144,8 +165,9 @@ export default {
       showPopup,
       addRule,
       applyRules,
-      deleteRule,
       toggleMode,
+      data: props.config,
+      expressions,
     };
   },
 };
@@ -311,6 +333,16 @@ input:checked + .mode__toggle:before {
   cursor: pointer;
   border-radius: 5px;
   font-size: inherit;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  align-items: center;
+  line-height: 1rem;
+  vertical-align: center ;
+}
+
+.popup__add svg {
+  margin-right: 0.3em;
 }
 
 .popup__breaker:before,
